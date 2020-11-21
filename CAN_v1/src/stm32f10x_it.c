@@ -38,7 +38,7 @@
 /* Private variables ---------------------------------------------------------*/
 volatile uint8_t flag_ = 1;
 
-CanRxMsg RxMessage;
+
 //extern void LED_Display(uint8_t Ledstatus);
 
 /* Private function prototypes -----------------------------------------------*/
@@ -171,19 +171,37 @@ void SysTick_Handler(void)
   * @retval None
   */
 void CAN1_RX0_IRQHandler(void)
+//void USB_LP_CAN1_RX0_IRQHandler(void)
 {
-  CAN_Receive(CAN1, CAN_Filter_FIFO0, &RxMessage);
+  CAN_Receive(CAN1, CAN_Filter_FIFO0, &RxMessage_FIFO0);
 
-  if ((RxMessage.StdId == 0x321)&&(RxMessage.IDE == CAN_ID_STD)&&(RxMessage.DLC == 1)&&(RxMessage.Data[0] == 0xAA))
+//  if ((RxMessage.StdId == 0x321)&&(RxMessage.IDE == CAN_ID_STD)&&(RxMessage.DLC == 1)&&(RxMessage.Data[0] == 0xAA))
+//  {
+//    /* Turn On LED3 */
+////    LED_Display(0x03); /* OK */
+//  }
+//  else
+//  {
+//    /* Turn Off LED3 */
+////    LED_Display(0x05); /* Error */
+//  }
+
+  if ((RxMessage_FIFO0.StdId == 0xF)&&(RxMessage_FIFO0.IDE == CAN_ID_STD)&&(RxMessage_FIFO0.DLC == 2))
   {
-    /* Turn On LED3 */
-//    LED_Display(0x03); /* OK */
+	  UART_FIFO0 = 1;
   }
-  else
-  {
-    /* Turn Off LED3 */
-//    LED_Display(0x05); /* Error */
-  }
+
+//  CAN_Receive(CAN1, CAN_Filter_FIFO1, &RxMessage_FIFO1);
+//  if (		 (RxMessage_FIFO1.StdId == 0x2)
+//		  && (RxMessage_FIFO1.IDE == CAN_ID_STD)
+//		  && (RxMessage_FIFO1.DLC == 8)
+//		  && (RxMessage_FIFO1.Data[0] != 0x00)
+//		  && (RxMessage_FIFO1.Data[1] != 0x00)
+//		  && (RxMessage_FIFO1.Data[2] != 0x00)
+//		  && (RxMessage_FIFO1.Data[3] != 0x00))
+//  {
+//	  UART_FIFO1 = 1;
+//  }
 }
 
 /**

@@ -36,6 +36,10 @@
 /* Exported functions ------------------------------------------------------- */
  extern volatile uint8_t flag_;
  volatile uint32_t source_time;
+ volatile uint8_t UART_FIFO0;
+ volatile uint8_t UART_FIFO1;
+ CanRxMsg RxMessage_FIFO0;
+ CanRxMsg RxMessage_FIFO1;
 
 void NMI_Handler(void);
 void HardFault_Handler(void);

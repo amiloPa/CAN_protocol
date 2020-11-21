@@ -37,8 +37,9 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/core&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CAN_v1/src/UART}&quot;"/>
 								</option>
-								<option id="gnu.c.compiler.option.dialect.std.756102075" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.dialect.std.756102075" name="Language standard" superClass="gnu.c.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.c.compiler.dialect.default" valueType="enumerated"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1945726684" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.322162927" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>
 							</tool>
@@ -111,6 +112,7 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/inc&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/device&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/CMSIS/core&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/CAN_v1/src/UART}&quot;"/>
 								</option>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c.1188909679" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.c"/>
 								<inputType id="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s.1974344421" superClass="fr.ac6.managedbuild.tool.gnu.cross.c.compiler.input.s"/>

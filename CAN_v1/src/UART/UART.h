@@ -18,7 +18,7 @@
 
 void UART_Conf(uint32_t BaudRate);
 
-#define UART_BAUD 115200	// define the speed of interest to us
+#define UART_BAUD 128000//115200	// define the speed of interest to us
 
 #define UART_RX_BUF_SIZE 32	// we define a buffer of 32 bytes
 #define UART_RX_BUF_MASK ( UART_RX_BUF_SIZE - 1)	// we define a mask for our buffer
