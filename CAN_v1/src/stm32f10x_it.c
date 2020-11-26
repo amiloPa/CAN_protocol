@@ -170,10 +170,10 @@ void SysTick_Handler(void)
   * @param  None
   * @retval None
   */
-void CAN1_RX0_IRQHandler(void)
-//void USB_LP_CAN1_RX0_IRQHandler(void)
+//void CAN1_RX0_IRQHandler(void)
+void USB_LP_CAN_RX0_IRQHandler(void)
 {
-  CAN_Receive(CAN1, CAN_Filter_FIFO0, &RxMessage_FIFO0);
+  CAN_Receive(CAN1, CAN_FIFO0, &RxMessage_FIFO0);
 
 //  if ((RxMessage.StdId == 0x321)&&(RxMessage.IDE == CAN_ID_STD)&&(RxMessage.DLC == 1)&&(RxMessage.Data[0] == 0xAA))
 //  {
@@ -203,6 +203,7 @@ void CAN1_RX0_IRQHandler(void)
 //	  UART_FIFO1 = 1;
 //  }
 }
+
 
 /**
   * @brief  This function handles CAN2 RX0 Handler.
