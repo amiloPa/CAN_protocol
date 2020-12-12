@@ -186,24 +186,24 @@ void USB_LP_CAN_RX0_IRQHandler(void)
 ////    LED_Display(0x05); /* Error */
 //  }
 
-  if ((RxMessage_FIFO0.StdId == 0xF)&&(RxMessage_FIFO0.IDE == CAN_ID_STD)&&(RxMessage_FIFO0.DLC == 2))
+  if (		 (RxMessage_FIFO0.StdId >= 0x000F)
+		  && (RxMessage_FIFO0.StdId <= 0x0012)
+		  && (RxMessage_FIFO0.IDE == CAN_ID_STD)
+		  && (RxMessage_FIFO0.DLC == 2))
   {
 	  UART_FIFO0 = 1;
   }
 
-//  CAN_Receive(CAN1, CAN_Filter_FIFO1, &RxMessage_FIFO1);
-//  if (		 (RxMessage_FIFO1.StdId == 0x2)
-//		  && (RxMessage_FIFO1.IDE == CAN_ID_STD)
-//		  && (RxMessage_FIFO1.DLC == 8)
-//		  && (RxMessage_FIFO1.Data[0] != 0x00)
-//		  && (RxMessage_FIFO1.Data[1] != 0x00)
-//		  && (RxMessage_FIFO1.Data[2] != 0x00)
-//		  && (RxMessage_FIFO1.Data[3] != 0x00))
-//  {
-//	  UART_FIFO1 = 1;
-//  }
-}
+  CAN_Receive(CAN1, CAN_FIFO1, &RxMessage_FIFO1);
 
+  if (		 (RxMessage_FIFO1.StdId >= 0x0020)
+		  && (RxMessage_FIFO1.StdId <= 0x0023)
+		  && (RxMessage_FIFO1.IDE == CAN_ID_STD)
+		  && (RxMessage_FIFO1.DLC == 2))
+  {
+	  UART_FIFO1 = 1;
+  }
+}
 
 /**
   * @brief  This function handles CAN2 RX0 Handler.

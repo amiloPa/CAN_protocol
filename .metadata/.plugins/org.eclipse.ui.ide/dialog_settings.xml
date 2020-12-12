@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="CleanDialogSettings">
+		<item value="500" key="DIALOG_WIDTH"/>
+		<item value="true" key="TOGGLE_SELECTED"/>
+		<item value="377" key="DIALOG_HEIGHT"/>
+		<item value="710" key="DIALOG_X_ORIGIN"/>
+		<item value="269" key="DIALOG_Y_ORIGIN"/>
+	</section>
+	<section name="ExternalProjectImportWizard">
+		<item value="false" key="WizardProjectsImportPage.STORE_NESTED_PROJECTS"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
+		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="C:\Users\hj2dv3\AppData\Roaming\Ac6\SW4STM32\firmwares\STM32F10x_StdPeriph_Lib_V3.5.0\Project\STM32F10x_StdPeriph_Template\TrueSTUDIO\STM32100B-EVAL"/>
+			<item value="C:\Users\hj2dv3\AppData\Roaming\Ac6\SW4STM32\firmwares\STM32F10x_StdPeriph_Lib_V3.5.0\Project\STM32F10x_StdPeriph_Template\TrueSTUDIO\STM3210B-EVAL"/>
+			<item value="C:\Users\hj2dv3\AppData\Roaming\Ac6\SW4STM32\firmwares\STM32F10x_StdPeriph_Lib_V3.5.0\Project\STM32F10x_StdPeriph_Template\TrueSTUDIO\STM3210C-EVAL"/>
+			<item value="C:\Users\hj2dv3\AppData\Roaming\Ac6\SW4STM32\firmwares\STM32F10x_StdPeriph_Lib_V3.5.0\Project\STM32F10x_StdPeriph_Template"/>
+		</list>
+		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
+			<item value=""/>
+		</list>
+	</section>
+	<section name="ChooseWorkspaceDialogSettings">
+		<item value="32" key="DIALOG_X_ORIGIN"/>
+		<item value="332" key="DIALOG_Y_ORIGIN"/>
+	</section>
+</section>

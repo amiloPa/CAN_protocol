@@ -40,11 +40,12 @@ void Init_RxMes(CanRxMsg *RxMessage);
 int main(void)
 {
 uint8_t temp1;
-uint32_t temp2;
-uint8_t TransmitStatus[3] = {0,0,0};
-char result[4] = {0,0,0,0};
+//uint32_t temp2;
+//uint8_t TransmitStatus[3] = {0,0,0};
+char SID[4] = {0,0,0,0};
+//char result[4] = {0,0,0,0};
 char Dig_Out[4] = {0,0,0,0};
-char Ana_Out[6] = {0,0,0,0,0,0};
+//char Ana_Out[6] = {0,0,0,0,0,0};
 //uint32_t temp3;
 //uint32_t temp4;
 
@@ -60,6 +61,7 @@ char Ana_Out[6] = {0,0,0,0,0,0};
 
   /* IT Configuration for CAN1 */
   CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+  CAN_ITConfig(CAN1, CAN_IT_FMP1, ENABLE);
 
   /* IT Configuration for CAN2 */
  // CAN_ITConfig(CAN2, CAN_IT_FMP0, ENABLE);
@@ -92,7 +94,11 @@ char Ana_Out[6] = {0,0,0,0,0,0};
 
 		if(UART_FIFO0)
 		{
-			uart_puts("FIFO0: ");
+			uart_puts("FIFO__0: ");
+			itoa(RxMessage_FIFO0.StdId, SID, 10);
+			uart_puts("ID: ");
+			uart_puts(SID);
+			uart_puts(" :: ");
 			itoa(RxMessage_FIFO0.Data[0], Dig_Out, 10);
 			uart_puts(Dig_Out);
 			uart_puts(" ");
@@ -104,18 +110,16 @@ char Ana_Out[6] = {0,0,0,0,0,0};
 
 		if(UART_FIFO1)
 		{
-			uart_puts("FIFO1: ");
-//			itoa(RxMessage_FIFO1.Data[0], Ana_Out, 10);
-//			uart_puts(Ana_Out);
-//			uart_puts("  ");
-//			itoa(RxMessage_FIFO1.Data[1], Ana_Out, 10);
-//			uart_puts(Ana_Out);
-//			uart_puts("  ");
-//			itoa(RxMessage_FIFO1.Data[2], Ana_Out, 10);
-//			uart_puts(Ana_Out);
-//			uart_puts("  ");
-//			itoa(RxMessage_FIFO1.Data[3], Ana_Out, 10);
-//			uart_puts(Ana_Out);
+			uart_puts("FIFO__1: ");
+			itoa(RxMessage_FIFO1.StdId, SID, 10);
+			uart_puts("ID: ");
+			uart_puts(SID);
+			uart_puts(" :: ");
+			itoa(RxMessage_FIFO1.Data[0], Dig_Out, 10);
+			uart_puts(Dig_Out);
+			uart_puts(" ");
+			itoa(RxMessage_FIFO1.Data[1], Dig_Out, 10);
+			uart_puts(Dig_Out);
 			uart_puts("\n\r");
 			UART_FIFO1 = 0;
 		}
@@ -213,11 +217,25 @@ void CAN_Config(void)
   CAN_FilterInitStructure.CAN_FilterMode = CAN_FilterMode_IdList;
 //  CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_32bit;
   CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_16bit;
-  CAN_FilterInitStructure.CAN_FilterIdHigh = 0x000F << 5;
-  CAN_FilterInitStructure.CAN_FilterIdLow = 0x000F << 5;
-  CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x000F << 5;
-  CAN_FilterInitStructure.CAN_FilterMaskIdLow = 0x000F << 5;//0x000F;
+  CAN_FilterInitStructure.CAN_FilterIdHigh = 0x0011 << 5;		//17
+  CAN_FilterInitStructure.CAN_FilterIdLow = 0x000F << 5;		//15
+  CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x0012 << 5;	//18
+  CAN_FilterInitStructure.CAN_FilterMaskIdLow = 0x0010 << 5;	//16
   CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
+  CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;
+  CAN_FilterInit(&CAN_FilterInitStructure);
+
+/*------------------------*/
+  CAN_FilterInitStructure.CAN_FilterNumber = 1;
+//  CAN_FilterInitStructure.CAN_FilterMode = CAN_FilterMode_IdMask;
+  CAN_FilterInitStructure.CAN_FilterMode = CAN_FilterMode_IdList;
+//  CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_32bit;
+  CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_16bit;
+  CAN_FilterInitStructure.CAN_FilterIdHigh = 0x0022 << 5;		//34
+  CAN_FilterInitStructure.CAN_FilterIdLow = 0x0020 << 5;		//32
+  CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x0023 << 5;	//35
+  CAN_FilterInitStructure.CAN_FilterMaskIdLow = 0x0021 << 5;	//33
+  CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_Filter_FIFO1;
   CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;
   CAN_FilterInit(&CAN_FilterInitStructure);
 
@@ -230,7 +248,7 @@ void CAN_Config(void)
   /* Transmit */
 //  TxMessage.StdId = 0x321;
 //  TxMessage.ExtId = 0x01;
-  TxMessage.StdId = 0x0A;
+  TxMessage.StdId = 0xA;
   TxMessage.ExtId = 0x00;
   TxMessage.RTR = CAN_RTR_DATA;
   TxMessage.IDE = CAN_ID_STD;

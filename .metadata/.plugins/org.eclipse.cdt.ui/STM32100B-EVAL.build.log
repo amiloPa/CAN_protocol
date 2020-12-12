@@ -1,0 +1,15 @@
+23:46:33 **** Incremental Build of configuration Debug for project STM32100B-EVAL ****
+make all 
+Building file: C:/Users/hj2dv3/AppData/Roaming/Ac6/SW4STM32/firmwares/STM32F10x_StdPeriph_Lib_V3.5.0/Project/STM32F10x_StdPeriph_Template/main.c
+Invoking: MCU GCC Compiler
+C:\Users\hj2dv3\AppData\Roaming\Ac6\SW4STM32\firmwares\STM32F10x_StdPeriph_Lib_V3.5.0\Project\STM32F10x_StdPeriph_Template\TrueSTUDIO\STM32100B-EVAL\Debug
+arm-none-eabi-gcc -mthumb -mfloat-abi=soft -O0 -g -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"User/main.d" -MT"User/main.o" -o "User/main.o" "C:/Users/hj2dv3/AppData/Roaming/Ac6/SW4STM32/firmwares/STM32F10x_StdPeriph_Lib_V3.5.0/Project/STM32F10x_StdPeriph_Template/main.c"
+C:/Users/hj2dv3/AppData/Roaming/Ac6/SW4STM32/firmwares/STM32F10x_StdPeriph_Lib_V3.5.0/Project/STM32F10x_StdPeriph_Template/main.c:23:10: fatal error: stm32_eval.h: No such file or directory
+ #include "stm32_eval.h"
+          ^~~~~~~~~~~~~~
+compilation terminated.
+User/subdir.mk:21: recipe for target 'User/main.o' failed
+make: *** [User/main.o] Error 1
+
+23:46:34 Build Finished (took 1s.273ms)
+

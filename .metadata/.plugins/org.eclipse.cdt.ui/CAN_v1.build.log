@@ -1,0 +1,6 @@
+01:43:37 **** Incremental Build of configuration Debug for project CAN_v1 ****
+make -j4 all 
+make: Nothing to be done for 'all'.
+
+01:43:37 Build Finished (took 659ms)
+

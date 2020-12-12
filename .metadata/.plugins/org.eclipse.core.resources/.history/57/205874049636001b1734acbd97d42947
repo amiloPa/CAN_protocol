@@ -1,0 +1,370 @@
+
+/**
+  ******************************************************************************
+  * @file    main.c
+  * @author  Ac6
+  * @version V1.0
+  * @date    01-December-2013
+  * @brief   Default main function.
+  ******************************************************************************
+*/
+
+
+#include "stm32f10x.h"
+#include "UART/UART.h"
+#include "stm32f10x_can.h"
+#include "stm32f10x_it.h"
+
+#define F_PCLK2  72000000
+#define CAN_BAUDRATE  1000  /* 500kBps */
+#define MEASURE_PERIOD 1000 // measure period in ms
+
+
+ErrorStatus HSEStartUpStatus;
+CAN_InitTypeDef        CAN_InitStructure;
+CAN_FilterInitTypeDef  CAN_FilterInitStructure;
+CanTxMsg TxMessage;
+
+
+
+
+void RCC_Conf(void);
+void GPIO_Conf(void);
+void CAN_Config(void);
+void NVIC_Conf(void);
+void SysTick_Conf(void);
+void Init_RxMes(CanRxMsg *RxMessage);
+
+
+
+int main(void)
+{
+uint8_t temp1;
+uint32_t temp2;
+uint8_t TransmitStatus[3] = {0,0,0};
+char result[4] = {0,0,0,0};
+char Dig_Out[4] = {0,0,0,0};
+char Ana_Out[6] = {0,0,0,0,0,0};
+//uint32_t temp3;
+//uint32_t temp4;
+
+	RCC_Conf();
+
+	SysTick_Conf();
+	GPIO_Conf();
+	UART_Conf(UART_BAUD);
+
+	/* CANs configuration */
+	CAN_Config();
+	NVIC_Conf();
+
+  /* IT Configuration for CAN1 */
+  CAN_ITConfig(CAN1, CAN_IT_FMP0, ENABLE);
+
+  /* IT Configuration for CAN2 */
+ // CAN_ITConfig(CAN2, CAN_IT_FMP0, ENABLE);
+
+	uart_puts("\n\r");
+	uart_puts("STM32F103 start...");
+  uart_puts("\n\r");
+
+	while (1)
+	{
+		if(flag_)
+		{
+
+			TxMessage.Data[0] = (uint8_t)((source_time >> 24) & 0xFF);
+			TxMessage.Data[1] = (uint8_t)((source_time >> 16) & 0xFF);
+			TxMessage.Data[2] = (uint8_t)((source_time >> 8) & 0xFF);
+			TxMessage.Data[3] = (uint8_t)(source_time & 0xFF);
+
+			temp1 = CAN_Transmit(CAN1, &TxMessage);
+//			itoa(temp1, result, 10);
+//			result[0] = (char)"1";
+//			uart_puts(result);
+//			uart_puts("\n\r");
+//			temp2 = CAN_GetLastErrorCode(CAN1);//CAN_ErrorCode_NoErr
+//			TransmitStatus[0] = CAN_TransmitStatus(CAN1,0);
+//			TransmitStatus[1] = CAN_TransmitStatus(CAN1,1);
+//			TransmitStatus[2] = CAN_TransmitStatus(CAN1,2);
+			flag_ = 0;
+		}
+
+		if(UART_FIFO0)
+		{
+			uart_puts("FIFO0: ");
+			itoa(RxMessage_FIFO0.Data[0], Dig_Out, 10);
+			uart_puts(Dig_Out);
+			uart_puts(" ");
+			itoa(RxMessage_FIFO0.Data[1], Dig_Out, 10);
+			uart_puts(Dig_Out);
+			uart_puts("\n\r");
+			UART_FIFO0 = 0;
+		}
+
+		if(UART_FIFO1)
+		{
+			uart_puts("FIFO1: ");
+//			itoa(RxMessage_FIFO1.Data[0], Ana_Out, 10);
+//			uart_puts(Ana_Out);
+//			uart_puts("  ");
+//			itoa(RxMessage_FIFO1.Data[1], Ana_Out, 10);
+//			uart_puts(Ana_Out);
+//			uart_puts("  ");
+//			itoa(RxMessage_FIFO1.Data[2], Ana_Out, 10);
+//			uart_puts(Ana_Out);
+//			uart_puts("  ");
+//			itoa(RxMessage_FIFO1.Data[3], Ana_Out, 10);
+//			uart_puts(Ana_Out);
+			uart_puts("\n\r");
+			UART_FIFO1 = 0;
+		}
+	}
+}
+
+
+void CAN_Config(void)
+{
+  GPIO_InitTypeDef  GPIO_InitStructure;
+  uint8_t ststus = 10;
+
+  /* Configure CAN1 and CAN2 IOs **********************************************/
+  /* GPIOB, GPIOD and AFIO clocks enable */
+//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
+
+  /* Configure CAN1 RX pin */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;//GPIO_Mode_IPU//GPIO_Mode_AF_PP;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+//  /* Configure CAN2 RX pin */
+//  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+//  GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  /* Configure CAN1 TX pin */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+
+
+//  /* Configure CAN2 TX pin */
+//  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+//  GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  /* Remap CAN1 and CAN2 GPIOs */
+//  GPIO_PinRemapConfig(GPIO_Remap2_CAN1 , ENABLE);
+//  GPIO_PinRemapConfig(GPIO_Remap_CAN2, ENABLE);
+
+  /* Configure CAN1 and CAN2 **************************************************/
+  /* CAN1 and CAN2 Periph clocks enable */
+//  RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1 | RCC_APB1Periph_CAN2, ENABLE);
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
+
+   /* CAN1 and CAN2 register init */
+  CAN_DeInit(CAN1);
+//  CAN_DeInit(CAN2);
+
+  /* Struct init*/
+  CAN_StructInit(&CAN_InitStructure);
+
+  /* CAN1 and CAN2  cell init */
+  CAN_InitStructure.CAN_TTCM = DISABLE;
+  CAN_InitStructure.CAN_ABOM = DISABLE;
+  CAN_InitStructure.CAN_AWUM = ENABLE;//DISABLE;
+  CAN_InitStructure.CAN_NART = DISABLE;
+  CAN_InitStructure.CAN_RFLM = DISABLE;
+  CAN_InitStructure.CAN_TXFP = ENABLE;
+  CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;
+  CAN_InitStructure.CAN_SJW = CAN_SJW_4tq;
+  CAN_InitStructure.CAN_BS1 = CAN_BS1_8tq;
+  CAN_InitStructure.CAN_BS2 = CAN_BS2_3tq;
+
+#if CAN_BAUDRATE == 1000
+  CAN_InitStructure.CAN_Prescaler =6; /* 500KBps */
+#elif CAN_BAUDRATE == 500 /* 500KBps */
+  CAN_InitStructure.CAN_Prescaler =12;
+#elif CAN_BAUDRATE == 250 /* 250KBps */
+  CAN_InitStructure.CAN_Prescaler =24;
+#elif CAN_BAUDRATE == 125 /* 125KBps */
+  CAN_InitStructure.CAN_Prescaler =48;
+#elif  CAN_BAUDRATE == 100 /* 100KBps */
+  CAN_InitStructure.CAN_Prescaler =60;
+#elif  CAN_BAUDRATE == 50 /* 50KBps */
+  CAN_InitStructure.CAN_Prescaler =120;
+#elif  CAN_BAUDRATE == 20 /* 20KBps */
+  CAN_InitStructure.CAN_Prescaler =300;
+#elif  CAN_BAUDRATE == 10 /* 10KBps */
+  CAN_InitStructure.CAN_Prescaler =600;
+#else
+   #error "Please select first the CAN Baudrate in Private defines in main.c "
+#endif  /* CAN_BAUDRATE == 1000 */
+
+
+  /*Initializes the CAN1  and CAN2 */
+  ststus = CAN_Init(CAN1, &CAN_InitStructure);
+//  CAN_Init(CAN2, &CAN_InitStructure);
+
+  /* CAN1 filter init */
+  CAN_FilterInitStructure.CAN_FilterNumber = 0;
+//  CAN_FilterInitStructure.CAN_FilterMode = CAN_FilterMode_IdMask;
+  CAN_FilterInitStructure.CAN_FilterMode = CAN_FilterMode_IdList;
+//  CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_32bit;
+  CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_16bit;
+  CAN_FilterInitStructure.CAN_FilterIdHigh = 0x000F << 5;
+  CAN_FilterInitStructure.CAN_FilterIdLow = 0x000F << 5;
+  CAN_FilterInitStructure.CAN_FilterMaskIdHigh = 0x000F << 5;
+  CAN_FilterInitStructure.CAN_FilterMaskIdLow = 0x000F << 5;//0x000F;
+  CAN_FilterInitStructure.CAN_FilterFIFOAssignment = CAN_Filter_FIFO0;
+  CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;
+  CAN_FilterInit(&CAN_FilterInitStructure);
+
+
+  /* CAN2 filter init */
+//  CAN_FilterInitStructure.CAN_FilterIdHigh =0x2460;
+//  CAN_FilterInitStructure.CAN_FilterNumber = 15;
+//  CAN_FilterInit(&CAN_FilterInitStructure);
+
+  /* Transmit */
+//  TxMessage.StdId = 0x321;
+//  TxMessage.ExtId = 0x01;
+  TxMessage.StdId = 0x0A;
+  TxMessage.ExtId = 0x00;
+  TxMessage.RTR = CAN_RTR_DATA;
+  TxMessage.IDE = CAN_ID_STD;
+  TxMessage.DLC = 4;
+}
+
+void RCC_Conf(void)
+{
+  // RCC setting reset
+  RCC_DeInit();
+
+  // Turn on HSE
+  RCC_HSEConfig(RCC_HSE_ON);
+
+  // Wait up to HSE will be ready
+  HSEStartUpStatus = RCC_WaitForHSEStartUp();
+
+  if(HSEStartUpStatus == SUCCESS)
+  {
+	  /*
+	   * the introduction of delays is (waitstate) for higher clock rates
+	   * is due to the maximum frequency with which it is performed
+	   * communication with Flash memory can be 24 MHz
+	   */
+	  FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
+
+	  // wait for flash memory
+	  FLASH_SetLatency(FLASH_Latency_2);
+
+	  // HCLK = SYSCLK
+	  RCC_HCLKConfig(RCC_SYSCLK_Div1);
+
+	  // PCLK2 = HCLK
+	  RCC_PCLK2Config(RCC_HCLK_Div1);
+
+	  // PCLK1 = HCLK/2
+	  RCC_PCLK1Config(RCC_HCLK_Div2);
+
+	  // PLLCLK = 8MHz * 9 = 72 MHz
+	  RCC_PLLConfig(RCC_PLLSource_HSE_Div1, RCC_PLLMul_9);
+
+	  // Turn on PLL
+	  RCC_PLLCmd(ENABLE);
+
+	  // Wait up to PLL will be ready
+	  while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
+
+	  // Select PLL as source of clock
+	  RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+
+	  // Wait up to PLL will be the source of clock
+	  while(RCC_GetSYSCLKSource() != 0x08);
+
+	  // Turn on Włączenie clock signal supervision system
+	  //RCC_ClockSecuritySystemCmd(ENABLE);
+
+  }
+
+}
+
+
+void NVIC_Conf(void)
+{
+	NVIC_InitTypeDef  NVIC_InitStructure;
+
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+
+  NVIC_InitStructure.NVIC_IRQChannel = USB_LP_CAN1_RX0_IRQn;//CAN1_RX1_IRQn;//USB_LP_CAN1_RX0_IRQn;//c;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x0;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
+//  NVIC_InitStructure.NVIC_IRQChannel = CAN2_RX0_IRQn;
+//  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x1;
+//  NVIC_Init(&NVIC_InitStructure);
+  //NVIC_SetVectorTable(NVIC_VectTab_FLASH, 0x0);
+}
+
+/**
+  * @brief  Initializes a Rx Message.
+  * @param  CanRxMsg *RxMessage.
+  * @retval None
+  */
+void Init_RxMes(CanRxMsg *RxMessage)
+{
+  uint8_t i = 0;
+
+  RxMessage->StdId = 0;
+  RxMessage->ExtId = 0;
+  RxMessage->IDE = CAN_ID_STD;
+  RxMessage->DLC = 0;
+  RxMessage->FMI = 0;
+  for (i = 0; i < 8; i++)
+  {
+    RxMessage->Data[i] = 0;
+  }
+}
+
+void GPIO_Conf(void)
+{
+	// Set pin PC13 as blinking led
+	GPIO_InitTypeDef GPIOInit;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	GPIO_StructInit(&GPIOInit);
+
+	GPIOInit.GPIO_Pin = GPIO_Pin_13;
+	GPIOInit.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIOInit.GPIO_Speed = GPIO_Speed_50MHz;
+	 GPIO_Init(GPIOC, &GPIOInit);
+}
+
+//__attribute__((interrupt)) void SysTick_Handler(void)
+//{
+//	static uint16_t counter = 0;
+//
+//	if(counter == MEASURE_PERIOD)
+//	{
+//		GPIO_ResetBits(GPIOC, GPIO_Pin_13);
+//		flag = 1;
+//		counter = 0;
+//	}
+//	else
+//	{
+//		GPIO_SetBits(GPIOC, GPIO_Pin_13);
+//		counter++;
+//	}
+//	source_time++;
+//
+//}
+
+void SysTick_Conf (void)
+{
+	SysTick_Config(F_PCLK2/8/1000);
+	SysTick->CTRL &= ~SysTick_CTRL_CLKSOURCE_Msk;
+}
